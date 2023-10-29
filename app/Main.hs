@@ -12,7 +12,6 @@ import Database.PostgreSQL.Simple
 import Db
 import GHC.Generics
 import Happstack.Server
-import qualified Happstack.Server.Internal.Monads
 import Response
 
 main :: IO ()
@@ -26,7 +25,7 @@ main = do
 
   simpleHTTP nullConf $ routes conn
 
-routes :: Connection -> Happstack.Server.Internal.Monads.ServerPartT IO Response
+routes :: Connection -> ServerPartT IO Response
 routes conn =
   msum
     [ dir "hello" $ ok $ msgResponse "Hello",
