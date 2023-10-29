@@ -1,0 +1,39 @@
+# Haskell-specific files
+/dist/
+/dist-*/
+/cabal.sandbox.config
+/cabal.project.local
+/.ghc/
+/.ghci
+/.hpc/
+*.prof
+*.aux
+*.hp
+*.eventlog
+
+# Stack-specific files
+/.stack-work/
+/stack.yaml.lock
+
+# Haskell build artifacts
+/.cabal-sandbox/
+/cabal.project.local.toplevel
+
+# Editor-specific files and directories
+/.idea/
+/.vscode/
+*~
+*.swp
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+/hie.yaml
+/dist-newstyle/
+*.o
+*.hi
+*.dyn_o
+*.dyn_hi
+
+# Dependency directories
+/vendor/
