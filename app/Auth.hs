@@ -18,7 +18,8 @@ import Web.JWT
 authRoutes conn =
   msum
     [ dir "register" $ register conn,
-      dir "login" $ login conn
+      dir "login" $ login conn,
+      dir "logout" logout
     ]
 
 register :: Connection -> ServerPart Response
@@ -60,7 +61,7 @@ login conn = do
       case passwordCheck of
         PasswordCheckSuccess -> do
           token <- liftIO $ generateToken (String $ T.pack $ username checkUser) (String $ T.pack $ name checkUser)
-          let jwtCookie = mkCookie "jwt" $ T.unpack token
+          let jwtCookie = mkCookie "startrack-jwt" $ T.unpack token
               cookieLife = MaxAge $ 7 * 24 * 3600
 
           addCookie cookieLife jwtCookie
@@ -68,6 +69,14 @@ login conn = do
           ok $ msgResponse "Password correct"
         PasswordCheckFail -> ok $ msgResponse "Password incorrect"
     Nothing -> badRequest $ msgResponse "User not found"
+
+logout :: ServerPart Response
+logout = do
+  method POST
+
+  expireCookie "startrack-jwt"
+
+  ok $ msgResponse "Logged out"
 
 readJwtSecret :: IO T.Text
 readJwtSecret = do
