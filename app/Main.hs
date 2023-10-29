@@ -29,8 +29,6 @@ main = do
 routes :: Connection -> Happstack.Server.Internal.Monads.ServerPartT IO Response
 routes conn =
   msum
-    [ dir "hello" $ ok $ toResponse ("Hello" :: String),
+    [ dir "hello" $ ok $ msgResponse "Hello",
       dir "auth" $ authRoutes conn
     ]
-
-getAllUser conn = query_ conn "SELECT username, password, name FROM \"User\"" :: IO [User]
