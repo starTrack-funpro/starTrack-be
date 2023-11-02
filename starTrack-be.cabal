@@ -26,8 +26,10 @@ executable starTrack-be
     other-modules:
       Response
       Auth
+      Series
       Database.Db
       Database.User
+      Database.Series
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:

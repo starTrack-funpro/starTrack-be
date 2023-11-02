@@ -2,17 +2,14 @@
 
 module Main where
 
-import Auth
+import Auth (authRoutes)
 import Configuration.Dotenv
 import Control.Monad
-import Control.Monad.IO.Class
-import Data.Aeson
-import Data.Aeson.Types
 import Database.Db
 import Database.PostgreSQL.Simple
-import GHC.Generics
 import Happstack.Server
 import Response
+import Series (seriesRoutes)
 
 main :: IO ()
 main = do
@@ -29,5 +26,6 @@ routes :: Connection -> ServerPartT IO Response
 routes conn =
   msum
     [ dir "hello" $ ok $ msgResponse "Hello",
-      dir "auth" $ authRoutes conn
+      dir "auth" $ authRoutes conn,
+      dir "series" $ seriesRoutes conn
     ]

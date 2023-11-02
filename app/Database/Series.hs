@@ -1,0 +1,44 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE OverloadedStrings #-}
+
+module Database.Series where
+
+import Data.Aeson (ToJSON)
+import Database.PostgreSQL.Simple
+import Database.PostgreSQL.Simple.FromField
+import Database.PostgreSQL.Simple.ToField
+import GHC.Generics
+import Happstack.Server
+
+data SeriesType = TVSeries | Film | Comic | Novel
+  deriving (Generic, Enum, Show, ToJSON)
+
+instance FromField SeriesType where
+  fromField f mData =
+    case mData of
+      Just "TVSeries" -> return TVSeries
+      Just "Film" -> return Film
+      Just "Comic" -> return Comic
+      Just "Novel" -> return Novel
+      _ -> returnError ConversionFailed f "Invalid SeriesType value"
+
+instance ToField SeriesType where
+  toField :: SeriesType -> Action
+  toField TVSeries = toField ("TVSeries" :: String)
+  toField Film = toField ("Film" :: String)
+  toField Comic = toField ("Comic" :: String)
+  toField Novel = toField ("Novel" :: String)
+
+data Series = Series
+  { id :: Int,
+    title :: String,
+    year :: Int,
+    rating :: Double,
+    description :: String,
+    seriesType :: SeriesType
+  }
+  deriving (Generic, Show, ToRow, FromRow, ToJSON)
+
+getAllSeries conn = query_ conn "SELECT id, title, year, rating, description, type FROM \"Series\"" :: IO [Series]
