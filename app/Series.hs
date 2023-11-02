@@ -12,16 +12,27 @@ import Utils
 seriesRoutes conn =
   msum
     [ nullDir >> allSeries conn,
-      nullDir >> addSeries conn
+      nullDir >> addSeries conn,
+      path $ \id -> series conn id
     ]
 
 allSeries :: Connection -> ServerPart Response
 allSeries conn = do
   method GET
 
-  series <- liftIO $ getAllSeries conn
+  fetchedSeries <- liftIO $ getAllSeries conn
 
-  ok $ defaultResponse $ encode series
+  ok $ defaultResponse $ encode fetchedSeries
+
+series :: Connection -> Int -> ServerPart Response
+series conn id = do
+  method GET
+
+  fetchedSeries <- liftIO $ getSeriesById conn id
+
+  case fetchedSeries of
+    Just fetched -> ok $ defaultResponse $ encode fetched
+    Nothing -> notFound $ msgResponse "Series not found"
 
 addSeries :: Connection -> ServerPart Response
 addSeries conn = authenticate $ decodeRequestBody $ do

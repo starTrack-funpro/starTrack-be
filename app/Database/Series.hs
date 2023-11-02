@@ -44,7 +44,7 @@ data Series = Series
 getAllSeries conn = query_ conn "SELECT id, title, year, rating, description, type FROM \"Series\"" :: IO [Series]
 
 getSeriesById conn id = do
-  fetched <- query conn "SELECT id, title, year, rating, description, type FROM \"Series\" WHERE id = ?" id :: IO [Series]
+  fetched <- query conn "SELECT id, title, year, rating, description, type FROM \"Series\" WHERE id = ?" [id] :: IO [Series]
 
   if null fetched
     then return Nothing
