@@ -16,14 +16,6 @@ data User = User
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
-instance FromData User where
-  fromData = do
-    -- Define how to parse the request body into a User object
-    username <- look "username"
-    password <- look "password"
-    name <- look "name"
-    return (User username password name)
-
 getUserByUsername conn name = do
   fetched <- query conn "SELECT username, password, name FROM \"User\" WHERE username = ?" [name] :: IO [User]
 
