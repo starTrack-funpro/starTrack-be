@@ -6,7 +6,7 @@ import Data.Aeson
 import Database.PostgreSQL.Simple
 import Database.Series
 import Happstack.Server
-import Response
+import Utils
 
 seriesRoutes conn =
   msum
@@ -23,9 +23,8 @@ allSeries conn = do
   ok $ defaultResponse $ encode series
 
 addSeries :: Connection -> ServerPart Response
-addSeries conn = do
+addSeries conn = decodeRequestBody $ do
   method POST
-  decodeBody (defaultBodyPolicy "/tmp/" 4096 4096 4096)
 
   formTitle <- look "title"
   formYear <- look "year"

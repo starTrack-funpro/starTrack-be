@@ -8,8 +8,8 @@ import Control.Monad
 import Database.Db
 import Database.PostgreSQL.Simple
 import Happstack.Server
-import Response
 import Series (seriesRoutes)
+import Utils
 
 main :: IO ()
 main = do

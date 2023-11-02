@@ -11,8 +11,8 @@ import qualified Data.Text as T
 import Database.PostgreSQL.Simple
 import Database.User
 import Happstack.Server
-import Response
 import System.Environment
+import Utils
 import Web.JWT
 
 authRoutes conn =
@@ -23,9 +23,8 @@ authRoutes conn =
     ]
 
 register :: Connection -> ServerPart Response
-register conn = do
+register conn = decodeRequestBody $ do
   method POST
-  decodeBody (defaultBodyPolicy "/tmp/" 4096 4096 4096)
 
   formUsername <- look "username"
   formPassword <- look "password"
@@ -43,9 +42,8 @@ register conn = do
     Just checkUser -> badRequest $ msgResponse "User already exists"
 
 login :: Connection -> ServerPart Response
-login conn = do
+login conn = decodeRequestBody $ do
   method POST
-  decodeBody (defaultBodyPolicy "/tmp/" 4096 4096 4096)
 
   formUsername <- look "username"
   formPassword <- look "password"
@@ -66,7 +64,7 @@ login conn = do
 
           addCookie cookieLife jwtCookie
 
-          ok $ msgResponse "Password correct"
+          ok $ msgResponse "Successfully logged in"
         PasswordCheckFail -> ok $ msgResponse "Password incorrect"
     Nothing -> badRequest $ msgResponse "User not found"
 
