@@ -13,7 +13,7 @@ import GHC.Generics
 import Happstack.Server
 
 data SeriesType = TVSeries | Film | Comic | Novel
-  deriving (Generic, Enum, Show, ToJSON)
+  deriving (Generic, Enum, Show, Read, ToJSON)
 
 instance FromField SeriesType where
   fromField f mData =
@@ -42,3 +42,13 @@ data Series = Series
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
 getAllSeries conn = query_ conn "SELECT id, title, year, rating, description, type FROM \"Series\"" :: IO [Series]
+
+getSeriesById conn id = do
+  fetched <- query conn "SELECT id, title, year, rating, description, type FROM \"Series\" WHERE id = ?" id :: IO [Series]
+
+  if null fetched
+    then return Nothing
+    else return $ Just $ head fetched
+
+addNewSeries conn (Series _ title year rating description seriesType) =
+  execute conn "INSERT INTO \"Series\" (title, year, rating, description, type) VALUES (?, ?, ?, ?, ?)" (title, year, rating, description, seriesType)

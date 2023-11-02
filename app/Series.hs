@@ -10,7 +10,8 @@ import Response
 
 seriesRoutes conn =
   msum
-    [ nullDir >> allSeries conn
+    [ nullDir >> allSeries conn,
+      nullDir >> addSeries conn
     ]
 
 allSeries :: Connection -> ServerPart Response
@@ -20,3 +21,20 @@ allSeries conn = do
   series <- liftIO $ getAllSeries conn
 
   ok $ defaultResponse $ encode series
+
+addSeries :: Connection -> ServerPart Response
+addSeries conn = do
+  method POST
+  decodeBody (defaultBodyPolicy "/tmp/" 4096 4096 4096)
+
+  formTitle <- look "title"
+  formYear <- look "year"
+  formRating <- look "rating"
+  formDesc <- look "description"
+  formType <- look "type"
+
+  let newSeries = Series 0 formTitle (read formYear) (read formRating) formDesc (read formType)
+
+  liftIO $ addNewSeries conn newSeries
+
+  ok $ msgResponse "Successfully add new series"
