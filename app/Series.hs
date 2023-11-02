@@ -6,6 +6,7 @@ import Data.Aeson
 import Database.PostgreSQL.Simple
 import Database.Series
 import Happstack.Server
+import JWT
 import Utils
 
 seriesRoutes conn =
@@ -23,7 +24,7 @@ allSeries conn = do
   ok $ defaultResponse $ encode series
 
 addSeries :: Connection -> ServerPart Response
-addSeries conn = decodeRequestBody $ do
+addSeries conn = authenticate $ decodeRequestBody $ do
   method POST
 
   formTitle <- look "title"

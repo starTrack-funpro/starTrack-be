@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Auth where
 
 import Control.Monad
@@ -11,6 +9,7 @@ import qualified Data.Text as T
 import Database.PostgreSQL.Simple
 import Database.User
 import Happstack.Server
+import JWT
 import System.Environment
 import Utils
 import Web.JWT
@@ -75,17 +74,3 @@ logout = do
   expireCookie "startrack-jwt"
 
   ok $ msgResponse "Logged out"
-
-readJwtSecret :: IO T.Text
-readJwtSecret = do
-  jwtSecretEnv <- getEnv "JWT_SECRET"
-  return $ T.pack jwtSecretEnv
-
--- generateToken :: Value -> Value -> T.Text
-generateToken username name = do
-  jwtSecret <- readJwtSecret
-
-  let claims = mempty {iss = stringOrURI "startrack-be", unregisteredClaims = ClaimsMap $ M.fromList [("username", username), ("name", name)]}
-      key = hmacSecret jwtSecret
-
-  return $ encodeSigned key mempty claims
