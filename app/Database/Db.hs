@@ -2,7 +2,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Db where
+module Database.Db where
 
 import Data.Aeson
 import qualified Data.ByteString as B
@@ -23,9 +23,6 @@ data User = User
     name :: String
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
-
--- instance ToJSON User where
---   toEncoding = genericToEncoding defaultOptions
 
 instance FromData User where
   fromData = do

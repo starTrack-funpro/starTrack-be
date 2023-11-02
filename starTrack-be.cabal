@@ -25,8 +25,8 @@ executable starTrack-be
     -- Modules included in this executable, other than Main.
     other-modules:
       Response
-      Db
       Auth
+      Database.Db
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -41,5 +41,6 @@ executable starTrack-be
       jwt >= 0.11.0,
       containers >= 0.6.5.1,
       dotenv >= 0.11.0.2
-    hs-source-dirs:   app
+    hs-source-dirs:
+      app
     default-language: Haskell2010

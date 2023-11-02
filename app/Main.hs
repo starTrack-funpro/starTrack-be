@@ -8,8 +8,8 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Data.Aeson
 import Data.Aeson.Types
+import Database.Db
 import Database.PostgreSQL.Simple
-import Db
 import GHC.Generics
 import Happstack.Server
 import Response

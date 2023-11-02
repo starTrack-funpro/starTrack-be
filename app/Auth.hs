@@ -8,8 +8,8 @@ import Data.Aeson
 import qualified Data.Map as M
 import Data.Password.Bcrypt
 import qualified Data.Text as T
+import Database.Db
 import Database.PostgreSQL.Simple
-import Db
 import Happstack.Server
 import Response
 import System.Environment
