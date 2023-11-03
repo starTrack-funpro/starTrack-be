@@ -37,7 +37,8 @@ data Series = Series
     year :: Int,
     rating :: Double,
     description :: String,
-    seriesType :: SeriesType
+    seriesType :: SeriesType,
+    imageUrl :: String
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
@@ -50,5 +51,5 @@ getSeriesById conn id = do
     then return Nothing
     else return $ Just $ head fetched
 
-addNewSeries conn (Series _ title year rating description seriesType) =
-  execute conn "INSERT INTO \"Series\" (title, year, rating, description, type) VALUES (?, ?, ?, ?, ?)" (title, year, rating, description, seriesType)
+addNewSeries conn (Series _ title year rating description seriesType imageUrl) =
+  execute conn "INSERT INTO \"Series\" (title, year, rating, description, type, \"imageUrl\") VALUES (?, ?, ?, ?, ?, ?)" (title, year, rating, description, seriesType, imageUrl)

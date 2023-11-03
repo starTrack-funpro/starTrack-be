@@ -43,8 +43,9 @@ addSeries conn = authenticate $ decodeRequestBody $ do
   formRating <- look "rating"
   formDesc <- look "description"
   formType <- look "type"
+  formImageUrl <- look "imageUrl"
 
-  let newSeries = Series 0 formTitle (read formYear) (read formRating) formDesc (read formType)
+  let newSeries = Series 0 formTitle (read formYear) (read formRating) formDesc (read formType) formImageUrl
 
   liftIO $ addNewSeries conn newSeries
 
