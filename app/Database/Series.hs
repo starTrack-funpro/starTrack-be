@@ -42,10 +42,10 @@ data Series = Series
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
-getAllSeries conn = query_ conn "SELECT id, title, year, rating, description, type, \"imageUrl\" FROM \"Series\"" :: IO [Series]
+getAllSeries conn = query_ conn "SELECT * FROM \"Series\"" :: IO [Series]
 
 getSeriesById conn id = do
-  fetched <- query conn "SELECT id, title, year, rating, description, type, \"imageUrl\" FROM \"Series\" WHERE id = ?" [id] :: IO [Series]
+  fetched <- query conn "SELECT * FROM \"Series\" WHERE id = ?" [id] :: IO [Series]
 
   if null fetched
     then return Nothing
