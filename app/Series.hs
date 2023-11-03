@@ -11,21 +11,22 @@ import Utils
 
 seriesRoutes conn =
   msum
-    [ nullDir >> allSeries conn,
-      nullDir >> addSeries conn,
-      path $ \id -> series conn id
+    [ nullDir >> getAllSeriesHandler conn,
+      nullDir >> addSeriesHandler conn,
+      path $ \id -> getSeriesByIdHandler conn id,
+      path $ \id -> updateSeriesHandler conn id
     ]
 
-allSeries :: Connection -> ServerPart Response
-allSeries conn = do
+getAllSeriesHandler :: Connection -> ServerPart Response
+getAllSeriesHandler conn = do
   method GET
 
   fetchedSeries <- liftIO $ getAllSeries conn
 
   ok $ defaultResponse $ encode fetchedSeries
 
-series :: Connection -> Int -> ServerPart Response
-series conn id = do
+getSeriesByIdHandler :: Connection -> Int -> ServerPart Response
+getSeriesByIdHandler conn id = do
   method GET
 
   fetchedSeries <- liftIO $ getSeriesById conn id
@@ -34,8 +35,8 @@ series conn id = do
     Just fetched -> ok $ defaultResponse $ encode fetched
     Nothing -> notFound $ msgResponse "Series not found"
 
-addSeries :: Connection -> ServerPart Response
-addSeries conn = authenticate $ decodeRequestBody $ do
+addSeriesHandler :: Connection -> ServerPart Response
+addSeriesHandler conn = authenticate $ decodeRequestBody $ do
   method POST
 
   formTitle <- look "title"
@@ -50,3 +51,20 @@ addSeries conn = authenticate $ decodeRequestBody $ do
   liftIO $ addNewSeries conn newSeries
 
   ok $ msgResponse "Successfully add new series"
+
+updateSeriesHandler :: Connection -> Int -> ServerPart Response
+updateSeriesHandler conn seriesId = authenticate $ decodeRequestBody $ do
+  method PATCH
+
+  formTitle <- look "title"
+  formYear <- look "year"
+  formRating <- look "rating"
+  formDesc <- look "description"
+  formType <- look "type"
+  formImageUrl <- look "imageUrl"
+
+  let updatedSeries = Series seriesId formTitle (read formYear) (read formRating) formDesc (read formType) formImageUrl
+
+  liftIO $ updateSeries conn updatedSeries
+
+  ok $ msgResponse "Successfully update series"

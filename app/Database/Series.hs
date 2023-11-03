@@ -42,10 +42,10 @@ data Series = Series
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
-getAllSeries conn = query_ conn "SELECT id, title, year, rating, description, type FROM \"Series\"" :: IO [Series]
+getAllSeries conn = query_ conn "SELECT id, title, year, rating, description, type, \"imageUrl\" FROM \"Series\"" :: IO [Series]
 
 getSeriesById conn id = do
-  fetched <- query conn "SELECT id, title, year, rating, description, type FROM \"Series\" WHERE id = ?" [id] :: IO [Series]
+  fetched <- query conn "SELECT id, title, year, rating, description, type, \"imageUrl\" FROM \"Series\" WHERE id = ?" [id] :: IO [Series]
 
   if null fetched
     then return Nothing
@@ -53,3 +53,6 @@ getSeriesById conn id = do
 
 addNewSeries conn (Series _ title year rating description seriesType imageUrl) =
   execute conn "INSERT INTO \"Series\" (title, year, rating, description, type, \"imageUrl\") VALUES (?, ?, ?, ?, ?, ?)" (title, year, rating, description, seriesType, imageUrl)
+
+updateSeries conn (Series id title year rating description seriesType imageUrl) =
+  execute conn "UPDATE \"Series\" SET title=?, year=?, rating=?, description=?, type=?, \"imageUrl\"=? WHERE id=?" (title, year, rating, description, seriesType, imageUrl, id)
