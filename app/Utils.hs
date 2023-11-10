@@ -16,7 +16,9 @@ instance ToJSON Message where
   toEncoding = genericToEncoding defaultOptions
 
 -- Response Config
-defaultResponse content = setHeader "Content-Type" "application/json" $ toResponse content
+defaultHeaders = setHeader "Content-Type" "application/json" . setHeader "Access-Control-Allow-Origin" "*"
+
+defaultResponse content = defaultHeaders $ toResponse content
 
 msgResponse :: String -> Response
 msgResponse msg = defaultResponse $ encode Message {message = msg}
