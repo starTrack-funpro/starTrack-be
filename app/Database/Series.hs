@@ -42,7 +42,8 @@ data Series = Series
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
-getAllSeries conn = query_ conn "SELECT * FROM \"Series\"" :: IO [Series]
+getAllSeries conn title (Just seriesType) = query conn "SELECT * FROM \"Series\" WHERE UPPER(title) LIKE UPPER(?) AND type=?" ("%" ++ title ++ "%", seriesType) :: IO [Series]
+getAllSeries conn title Nothing = query conn "SELECT * FROM \"Series\" WHERE UPPER(title) LIKE UPPER(?)" ["%" ++ title ++ "%"] :: IO [Series]
 
 getSeriesById conn id = do
   fetched <- query conn "SELECT * FROM \"Series\" WHERE id = ?" [id] :: IO [Series]

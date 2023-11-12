@@ -7,6 +7,7 @@ import Database.PostgreSQL.Simple
 import Database.Series
 import Happstack.Server
 import JWT
+import Text.Read (readMaybe)
 import Utils
 
 seriesRoutes conn =
@@ -21,7 +22,12 @@ getAllSeriesHandler :: Connection -> ServerPart Response
 getAllSeriesHandler conn = do
   method GET
 
-  fetchedSeries <- liftIO $ getAllSeries conn
+  queryTitle <- look "title"
+  queryTypeString <- look "type"
+
+  let queryType = readMaybe queryTypeString :: Maybe SeriesType
+
+  fetchedSeries <- liftIO $ getAllSeries conn queryTitle queryType
 
   ok $ defaultResponse $ encode fetchedSeries
 
