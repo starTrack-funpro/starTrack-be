@@ -30,7 +30,7 @@ verifyToken token = do
 
   let key = hmacSecret jwtSecret
 
-  case decodeAndVerifySignature (toVerify key) (T.drop 7 token) of
+  case decodeAndVerifySignature (toVerify key) token of
     Just verified -> do
       return True
     Nothing -> return False
@@ -38,12 +38,13 @@ verifyToken token = do
 authenticate :: ServerPartT IO Response -> ServerPartT IO Response
 authenticate handler = do
   request <- askRq
-  let headers = rqHeaders request
-      authHeader = M.lookup "authorization" headers
 
-  case authHeader of
-    Just headerPair -> do
-      verified <- liftIO $ verifyToken (decodeUtf8 $ head $ hValue headerPair)
+  let cookies = rqCookies request
+      jwtCookie = lookup "startrack-jwt" cookies
+
+  case jwtCookie of
+    Just cookie -> do
+      verified <- liftIO $ verifyToken (T.pack $ cookieValue cookie)
       if verified then handler else unauthorizedResponse
     Nothing -> unauthorizedResponse
   where
