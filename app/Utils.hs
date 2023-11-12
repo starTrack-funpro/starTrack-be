@@ -16,7 +16,10 @@ instance ToJSON Message where
   toEncoding = genericToEncoding defaultOptions
 
 -- Response Config
-defaultHeaders = setHeader "Content-Type" "application/json" . setHeader "Access-Control-Allow-Origin" "*"
+defaultHeaders =
+  setHeader "Content-Type" "application/json"
+    . setHeader "Access-Control-Allow-Origin" "http://localhost:3000"
+    . setHeader "Access-Control-Allow-Credentials" "true"
 
 defaultResponse content = defaultHeaders $ toResponse content
 
