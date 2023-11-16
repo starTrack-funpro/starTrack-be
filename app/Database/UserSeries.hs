@@ -6,6 +6,7 @@ module Database.UserSeries where
 
 import Data.Aeson
 import Database.PostgreSQL.Simple
+import qualified Database.Series as S
 import GHC.Generics
 
 data UserSeries = UserSeries
@@ -25,3 +26,10 @@ getUserSeries conn username seriesId = do
   if null fetched
     then return Nothing
     else return $ Just $ head fetched
+
+getAllUserSeries conn username =
+  query
+    conn
+    "SELECT * FROM \"Series\" WHERE id IN (SELECT \"seriesId\" FROM \"UserSeries\" WHERE username = ?)"
+    [username] ::
+    IO [S.Series]

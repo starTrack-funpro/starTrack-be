@@ -3,6 +3,7 @@ module SeriesTrack where
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
+import Data.Aeson
 import Database.PostgreSQL.Simple
 import Database.Series
 import Database.User
@@ -13,8 +14,24 @@ import Utils
 
 seriesTrackRoutes conn =
   msum
-    [ path $ \seriesId -> trackSeriesHandler conn seriesId
+    [ nullDir >> getTrackedSeriesHandler conn,
+      path $ \seriesId -> trackSeriesHandler conn seriesId
     ]
+
+getTrackedSeriesHandler :: Connection -> ServerPartT IO Response
+getTrackedSeriesHandler conn = authenticate $ do
+  method GET
+  maybeUsername <- getUsernameFromJwt
+
+  case maybeUsername of
+    Just username -> do
+      user <- liftIO $ getUserByUsername conn username
+      fetchedSeries <- liftIO $ getAllUserSeries conn username
+
+      case (user, fetchedSeries) of
+        (Just _, series) -> ok $ defaultResponse $ encode series
+        (Nothing, _) -> unauthorizedResponse
+    Nothing -> unauthorizedResponse
 
 trackSeriesHandler :: Connection -> Int -> ServerPartT IO Response
 trackSeriesHandler conn seriesId = authenticate $ do
