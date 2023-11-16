@@ -5,6 +5,7 @@ import Control.Monad.IO.Class
 import Data.Aeson
 import Database.PostgreSQL.Simple
 import Database.Series
+import qualified Database.User as U
 import Happstack.Server
 import JWT
 import Text.Read (readMaybe)

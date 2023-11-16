@@ -26,6 +26,9 @@ defaultResponse content = defaultHeaders $ toResponse content
 msgResponse :: String -> Response
 msgResponse msg = defaultResponse $ encode Message {message = msg}
 
+unauthorizedResponse :: ServerPartT IO Response
+unauthorizedResponse = unauthorized $ msgResponse "Unauthorized Access"
+
 -- Body Decoder Utils
 decodeRequestBody :: ServerPartT IO a -> ServerPartT IO a
 decodeRequestBody handler = decodeBody bodyPolicy >> handler

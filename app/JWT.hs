@@ -10,7 +10,7 @@ import Data.Text.Encoding
 import Happstack.Server
 import Happstack.Server.RqData
 import System.Environment
-import Utils (msgResponse)
+import Utils (msgResponse, unauthorizedResponse)
 import Web.JWT
 
 readJwtSecret :: IO T.Text
@@ -49,8 +49,6 @@ authenticate handler = do
         Just verifiedJwt -> handler
         Nothing -> unauthorizedResponse
     Nothing -> unauthorizedResponse
-  where
-    unauthorizedResponse = unauthorized $ msgResponse "Unauthorized Access"
 
 getUsernameFromJwt :: ServerPartT IO (Maybe String)
 getUsernameFromJwt = do

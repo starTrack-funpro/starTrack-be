@@ -96,8 +96,6 @@ protected conn = authenticate $ do
     Nothing -> do
       expireCookie "startrack-jwt"
       unauthorizedResponse
-  where
-    unauthorizedResponse = unauthorized $ msgResponse "Unauthorized Response"
 
 createCookie key val = Cookie "1" "/" "" key val False True SameSiteNoValue
 
