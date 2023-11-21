@@ -28,10 +28,12 @@ executable starTrack-be
       JWT
       Series
       SeriesTrack
+      SeriesChapter
       Utils
       Database.Db
       Database.User
       Database.Series
+      Database.Chapter
       Database.UserSeries
 
     -- LANGUAGE extensions used by modules in this package.
