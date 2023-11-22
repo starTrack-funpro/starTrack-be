@@ -29,11 +29,13 @@ executable starTrack-be
       Series
       SeriesTrack
       SeriesChapter
+      SeriesEpisode
       Utils
       Database.Db
       Database.User
       Database.Series
       Database.Chapter
+      Database.Episode
       Database.UserSeries
 
     -- LANGUAGE extensions used by modules in this package.
@@ -49,7 +51,8 @@ executable starTrack-be
       jwt >= 0.11.0,
       containers >= 0.6.5.1,
       dotenv >= 0.11.0.2,
-      transformers
+      transformers,
+      time
     hs-source-dirs:
       app
     default-language: Haskell2010

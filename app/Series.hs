@@ -9,6 +9,7 @@ import qualified Database.User as U
 import Happstack.Server
 import JWT
 import SeriesChapter (seriesChapterRoutes)
+import SeriesEpisode (seriesEpisodeRoutes)
 import Text.Read (readMaybe)
 import Utils
 
@@ -17,6 +18,7 @@ seriesRoutes conn =
     [ nullDir >> getAllSeriesHandler conn,
       nullDir >> addSeriesHandler conn,
       path $ \id -> dir "chapter" $ seriesChapterRoutes conn id,
+      path $ \id -> dir "episode" $ seriesEpisodeRoutes conn id,
       path $ \id -> getSeriesByIdHandler conn id,
       path $ \id -> updateSeriesHandler conn id
     ]
