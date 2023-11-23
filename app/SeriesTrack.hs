@@ -46,7 +46,7 @@ trackSeriesHandler conn seriesId = authenticate $ do
 
       response <- case (user, fetchedSeries, fetchedUserSeries) of
         (Just _, Just _, Nothing) -> do
-          let userSeries = UserSeries 0 username seriesId False
+          let userSeries = UserSeries 0 username seriesId
           liftIO $ addNewUserSeries conn userSeries
           return "Successfully track series"
         (Just _, Just _, Just _) -> return "Series already tracked"
