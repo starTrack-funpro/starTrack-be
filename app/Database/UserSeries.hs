@@ -12,12 +12,11 @@ import GHC.Generics
 data UserSeries = UserSeries
   { id :: Int,
     username :: String,
-    seriesId :: Int,
-    completed :: Bool
+    seriesId :: Int
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
-addNewUserSeries conn (UserSeries _ username seriesId _) =
+addNewUserSeries conn (UserSeries _ username seriesId) =
   execute conn "INSERT INTO \"UserSeries\" (username, \"seriesId\") VALUES (?, ?)" (username, seriesId)
 
 getUserSeries conn username seriesId = do
