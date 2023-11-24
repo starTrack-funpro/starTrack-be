@@ -29,7 +29,7 @@ addChapterHandler conn seriesId = authenticate $ decodeRequestBody $ do
   method POST
 
   formTitle <- look "title"
-  formChapterNo <- look "chapterNo"
+  formNo <- look "no"
   formPageFrom <- look "pageFrom"
   formPageTo <- look "pageTo"
 
@@ -37,7 +37,7 @@ addChapterHandler conn seriesId = authenticate $ decodeRequestBody $ do
 
   case fetchedSeries of
     Just fetched -> do
-      let newChapter = Chapter 0 formTitle (read formChapterNo) (read formPageFrom) (read formPageTo) seriesId
+      let newChapter = Chapter formTitle (read formNo) (read formPageFrom) (read formPageTo) seriesId
 
       liftIO $ addNewChapter conn newChapter
 

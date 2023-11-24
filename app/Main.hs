@@ -28,6 +28,6 @@ routes conn =
   msum
     [ dir "hello" $ ok $ msgResponse "Hello",
       dir "auth" $ authRoutes conn,
-      dir "series" $ seriesRoutes conn,
-      dir "series" $ dir "track" $ seriesTrackRoutes conn
+      dir "series" $ dir "track" $ seriesTrackRoutes conn,
+      dir "series" $ seriesRoutes conn
     ]

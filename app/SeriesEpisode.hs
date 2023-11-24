@@ -31,6 +31,7 @@ addEpisodeHandler conn seriesId = authenticate $ decodeRequestBody $ do
   method POST
 
   formTitle <- look "title"
+  formNo <- look "no"
   formDuration <- look "duration"
 
   let parsedDuration = fromMaybe (TimeOfDay 0 0 0) (parseDuration formDuration)
@@ -39,7 +40,7 @@ addEpisodeHandler conn seriesId = authenticate $ decodeRequestBody $ do
 
   case fetchedSeries of
     Just fetched -> do
-      let newEpisode = Episode 0 formTitle parsedDuration seriesId
+      let newEpisode = Episode formTitle (read formNo) parsedDuration seriesId
 
       liftIO $ addNewEpisode conn newEpisode
 

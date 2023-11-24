@@ -7,18 +7,47 @@ module Database.Episode where
 import Data.Aeson
 import Data.Time
 import Database.PostgreSQL.Simple
+import Database.PostgreSQL.Simple.FromField
+import Database.PostgreSQL.Simple.FromRow
+import Database.UserEpisode
 import GHC.Generics
 
 data Episode = Episode
-  { id :: Int,
-    title :: String,
+  { title :: String,
+    no :: Int,
     duration :: TimeOfDay,
     seriesId :: Int
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
-getAllEpisodeBySeriesId conn seriesId =
-  query conn "SELECT id, title, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ?" [seriesId] :: IO [Episode]
+data EpisodeWithUserEpisode = EpisodeWithUserEpisode
+  { episode :: Episode,
+    userEpisode :: Maybe UserEpisode
+  }
+  deriving (Generic, ToJSON)
 
-addNewEpisode conn (Episode _ title duration seriesId) =
-  execute conn "INSERT INTO \"Episode\" (title, duration, \"seriesId\") VALUES (?, ?, ?)" (title, duration, seriesId)
+instance FromRow EpisodeWithUserEpisode where
+  fromRow = EpisodeWithUserEpisode <$> fromRow <*> parseUserEpisode
+    where
+      parseUserEpisode = do
+        maybeUser <- field
+        maybeSeriesId <- field
+        maybeEpisodeNo <- field
+        maybeLastWatchTime <- field
+        case (maybeUser, maybeSeriesId, maybeEpisodeNo, maybeLastWatchTime) of
+          (Just user, Just seriesId, Just episodeNo, Just lastWatchTime) -> return $ Just (UserEpisode user seriesId episodeNo lastWatchTime)
+          _ -> return Nothing
+
+getAllEpisodeBySeriesId conn seriesId =
+  query conn "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ?" [seriesId] :: IO [Episode]
+
+getAllTrackedEpisodeBySeriesId conn user seriesId =
+  query conn q (user, seriesId) :: IO [EpisodeWithUserEpisode]
+  where
+    q =
+      "SELECT e.title, e.no, e.duration, e.\"seriesId\", ue.user, ue.\"seriesId\", ue.\"episodeNo\", ue.\"lastWatchTime\" \
+      \FROM \"Episode\" e LEFT JOIN \"UserEpisode\" ue \
+      \ON e.no = ue.\"episodeNo\" AND e.\"seriesId\" = ue.\"seriesId\" AND ue.user = ? AND e.\"seriesId\" = ?"
+
+addNewEpisode conn (Episode no title duration seriesId) =
+  execute conn "INSERT INTO \"Episode\" (title, no, duration, \"seriesId\") VALUES (?, ?, ?, ?)" (title, no, duration, seriesId)

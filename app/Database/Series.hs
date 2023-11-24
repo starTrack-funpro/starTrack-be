@@ -6,6 +6,9 @@
 module Database.Series where
 
 import Data.Aeson (ToJSON)
+import qualified Data.Aeson.Types as A
+import Database.Chapter
+import Database.Episode
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromField
 import Database.PostgreSQL.Simple.ToField
@@ -13,7 +16,7 @@ import GHC.Generics
 import Happstack.Server
 
 data SeriesType = TVSeries | Film | Comic | Novel
-  deriving (Generic, Enum, Show, Read, ToJSON)
+  deriving (Generic, Enum, Show, Read, ToJSON, Eq)
 
 instance FromField SeriesType where
   fromField f mData =
@@ -41,6 +44,19 @@ data Series = Series
     imageUrl :: String
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
+
+data TrackingInfo = EpisodeTracking EpisodeWithUserEpisode | ChapterTracking ChapterWithUserChapter
+  deriving (Generic)
+
+instance ToJSON TrackingInfo where
+  toJSON (EpisodeTracking episode) = A.toJSON episode
+  toJSON (ChapterTracking chapter) = A.toJSON chapter
+
+data SeriesTracking = SeriesTracking
+  { series :: Series,
+    trackingInfo :: [TrackingInfo]
+  }
+  deriving (Generic, ToJSON)
 
 getAllSeries conn title (Just seriesType) = query conn "SELECT * FROM \"Series\" WHERE UPPER(title) LIKE UPPER(?) AND type=?" ("%" ++ title ++ "%", seriesType) :: IO [Series]
 getAllSeries conn title Nothing = query conn "SELECT * FROM \"Series\" WHERE UPPER(title) LIKE UPPER(?)" ["%" ++ title ++ "%"] :: IO [Series]
