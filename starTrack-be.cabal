@@ -30,6 +30,8 @@ executable starTrack-be
       SeriesTrack
       SeriesChapter
       SeriesEpisode
+      EpisodeTrack
+      ChapterTrack
       Utils
       Database.Db
       Database.User

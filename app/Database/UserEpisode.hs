@@ -24,3 +24,8 @@ getUserEpisode conn user seriesId episodeNo = queryOne conn q (user, seriesId, e
 
 addNewUserEpisode conn (UserEpisode user seriesId episodeNo lastWatchTime) =
   execute conn "INSERT INTO \"UserEpisode\" (\"user\", \"seriesId\", \"episodeNo\", \"lastWatchTime\") VALUES (?, ?, ?, ?)" (user, seriesId, episodeNo, lastWatchTime)
+
+updateLastWatchTime conn user seriesId episodeNo lastWatchTime =
+  execute conn q (lastWatchTime, user, seriesId, episodeNo)
+  where
+    q = "UPDATE \"UserEpisode\" SET \"lastWatchTime\" = ? WHERE \"user\" = ? AND \"seriesId\" = ? AND \"episodeNo\" = ?"

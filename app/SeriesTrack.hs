@@ -1,5 +1,6 @@
 module SeriesTrack where
 
+import ChapterTrack
 import Control.Monad
 import Control.Monad.IO.Class
 import Data.Aeson
@@ -13,6 +14,7 @@ import Database.User
 import Database.UserChapter
 import Database.UserEpisode
 import Database.UserSeries
+import EpisodeTrack
 import Happstack.Server
 import JWT
 import Utils
@@ -20,8 +22,8 @@ import Utils
 seriesTrackRoutes conn =
   msum
     [ nullDir >> getTrackedSeriesHandler conn,
-      path $ \seriesId -> dir "episode" $ path $ \episodeNo -> trackEpisodeHandler conn seriesId episodeNo,
-      path $ \seriesId -> dir "chapter" $ path $ \chapterNo -> trackChapterHandler conn seriesId chapterNo,
+      path $ \seriesId -> dir "episode" $ episodeTrackRoutes conn seriesId,
+      path $ \seriesId -> dir "chapter" $ chapterTrackRoutes conn seriesId,
       path $ \seriesId -> getTrackedSeriesByIdHandler conn seriesId,
       path $ \seriesId -> trackSeriesHandler conn seriesId
     ]
@@ -99,50 +101,4 @@ trackSeriesHandler conn seriesId = authenticate $ do
         (Nothing, _, _) -> unauthorizedResponse
         (_, Nothing, _) -> notFound $ msgResponse "Series not found"
         (_, _, Just _) -> badRequest $ msgResponse "Series already tracked"
-    Nothing -> unauthorizedResponse
-
-trackEpisodeHandler :: Connection -> Int -> Int -> ServerPartT IO Response
-trackEpisodeHandler conn seriesId episodeNo = authenticate $ do
-  method POST
-  maybeUsername <- getUsernameFromJwt
-
-  case maybeUsername of
-    Just username -> do
-      user <- liftIO $ getUserByUsername conn username
-      fetchedSeries <- liftIO $ getSeriesById conn seriesId
-      fetchedEpisode <- liftIO $ getEpisodeByNo conn seriesId episodeNo
-      fetchedUserEpisode <- liftIO $ getUserEpisode conn username seriesId episodeNo
-
-      case (user, fetchedSeries, fetchedEpisode, fetchedUserEpisode) of
-        (Just user, Just _, Just _, Nothing) -> do
-          let userEpisode = UserEpisode username seriesId episodeNo (TimeOfDay 0 0 0)
-          liftIO $ addNewUserEpisode conn userEpisode
-          ok $ msgResponse "Successfully track episode"
-        (Nothing, _, _, _) -> unauthorizedResponse
-        (_, Nothing, _, _) -> notFound $ msgResponse "Series not found"
-        (_, _, Nothing, _) -> notFound $ msgResponse "Episode not found"
-        (_, _, _, Just _) -> badRequest $ msgResponse "Episode already tracked"
-    Nothing -> unauthorizedResponse
-
-trackChapterHandler :: Connection -> Int -> Int -> ServerPartT IO Response
-trackChapterHandler conn seriesId chapterNo = authenticate $ do
-  method POST
-  maybeUsername <- getUsernameFromJwt
-
-  case maybeUsername of
-    Just username -> do
-      user <- liftIO $ getUserByUsername conn username
-      fetchedSeries <- liftIO $ getSeriesById conn seriesId
-      fetchedChapter <- liftIO $ getChapterByNo conn seriesId chapterNo
-      fetchedUserChapter <- liftIO $ getUserChapter conn username seriesId chapterNo
-
-      case (user, fetchedSeries, fetchedChapter, fetchedUserChapter) of
-        (Just user, Just _, Just chapter, Nothing) -> do
-          let userChapter = UserChapter username seriesId chapterNo (pageFrom chapter)
-          liftIO $ addNewUserChapter conn userChapter
-          ok $ msgResponse "Successfully track chapter"
-        (Nothing, _, _, _) -> unauthorizedResponse
-        (_, Nothing, _, _) -> notFound $ msgResponse "Series not found"
-        (_, _, Nothing, _) -> notFound $ msgResponse "Chapter not found"
-        (_, _, _, Just _) -> badRequest $ msgResponse "Chapter already tracked"
     Nothing -> unauthorizedResponse
