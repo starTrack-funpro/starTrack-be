@@ -2,14 +2,15 @@ module SeriesTrack where
 
 import Control.Monad
 import Control.Monad.IO.Class
-import Control.Monad.Trans.Maybe
 import Data.Aeson
+import Data.Time (TimeOfDay (TimeOfDay))
 import Database.Chapter
 import Database.Episode
 import Database.PostgreSQL.Simple
 import Database.Series
 import qualified Database.Series as S
 import Database.User
+import Database.UserEpisode
 import Database.UserSeries
 import Happstack.Server
 import JWT
@@ -18,6 +19,7 @@ import Utils
 seriesTrackRoutes conn =
   msum
     [ nullDir >> getTrackedSeriesHandler conn,
+      path $ \seriesId -> dir "episode" $ path $ \episodeNo -> trackEpisodeHandler conn seriesId episodeNo,
       path $ \seriesId -> getTrackedSeriesByIdHandler conn seriesId,
       path $ \seriesId -> trackSeriesHandler conn seriesId
     ]
@@ -92,7 +94,30 @@ trackSeriesHandler conn seriesId = authenticate $ do
           let userSeries = UserSeries 0 username seriesId
           liftIO $ addNewUserSeries conn userSeries
           ok $ msgResponse "Successfully track series"
-        (Just _, Just _, Just _) -> badRequest $ msgResponse "Series already tracked"
         (Nothing, _, _) -> unauthorizedResponse
         (_, Nothing, _) -> notFound $ msgResponse "Series not found"
+        (_, _, Just _) -> badRequest $ msgResponse "Series already tracked"
+    Nothing -> unauthorizedResponse
+
+trackEpisodeHandler :: Connection -> Int -> Int -> ServerPartT IO Response
+trackEpisodeHandler conn seriesId episodeNo = authenticate $ do
+  method POST
+  maybeUsername <- getUsernameFromJwt
+
+  case maybeUsername of
+    Just username -> do
+      user <- liftIO $ getUserByUsername conn username
+      fetchedSeries <- liftIO $ getSeriesById conn seriesId
+      fetchedEpisode <- liftIO $ getEpisodeByNo conn seriesId episodeNo
+      fetchedUserEpisode <- liftIO $ getUserEpisode conn username seriesId episodeNo
+
+      case (user, fetchedSeries, fetchedEpisode, fetchedUserEpisode) of
+        (Just user, Just _, Just _, Nothing) -> do
+          let userEpisode = UserEpisode username seriesId episodeNo (TimeOfDay 0 0 0)
+          liftIO $ addNewUserEpisode conn userEpisode
+          ok $ msgResponse "Successfully track episode"
+        (Nothing, _, _, _) -> unauthorizedResponse
+        (_, Nothing, _, _) -> notFound $ msgResponse "Series not found"
+        (_, _, Nothing, _) -> notFound $ msgResponse "Episode not found"
+        (_, _, _, Just _) -> badRequest $ msgResponse "Episode already tracked"
     Nothing -> unauthorizedResponse

@@ -41,6 +41,13 @@ instance FromRow EpisodeWithUserEpisode where
 getAllEpisodeBySeriesId conn seriesId =
   query conn "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ?" [seriesId] :: IO [Episode]
 
+getEpisodeByNo conn seriesId episodeNo = do
+  fetched <- query conn "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ? AND no = ?" (seriesId, episodeNo) :: IO [Episode]
+
+  if null fetched
+    then return Nothing
+    else return $ Just $ head fetched
+
 getAllTrackedEpisodeBySeriesId conn user seriesId =
   query conn q (user, seriesId) :: IO [EpisodeWithUserEpisode]
   where
