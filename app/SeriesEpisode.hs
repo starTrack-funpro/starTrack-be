@@ -34,7 +34,7 @@ addEpisodeHandler conn seriesId = authenticate $ decodeRequestBody $ do
   formNo <- look "no"
   formDuration <- look "duration"
 
-  let parsedDuration = fromMaybe (TimeOfDay 0 0 0) (parseDuration formDuration)
+  let parsedDuration = parseDuration formDuration
 
   fetchedSeries <- liftIO $ getSeriesById conn seriesId
 
@@ -46,6 +46,3 @@ addEpisodeHandler conn seriesId = authenticate $ decodeRequestBody $ do
 
       ok $ msgResponse "Successfully add new episode"
     Nothing -> notFound $ msgResponse "Series not found"
-
-parseDuration :: String -> Maybe TimeOfDay
-parseDuration = parseTimeM True defaultTimeLocale "%H:%M:%S"
