@@ -8,6 +8,7 @@ module Database.Series where
 import Data.Aeson (ToJSON)
 import qualified Data.Aeson.Types as A
 import Database.Chapter
+import Database.Db
 import Database.Episode
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromField
@@ -61,12 +62,16 @@ data SeriesTracking = SeriesTracking
 getAllSeries conn title (Just seriesType) = query conn "SELECT * FROM \"Series\" WHERE UPPER(title) LIKE UPPER(?) AND type=?" ("%" ++ title ++ "%", seriesType) :: IO [Series]
 getAllSeries conn title Nothing = query conn "SELECT * FROM \"Series\" WHERE UPPER(title) LIKE UPPER(?)" ["%" ++ title ++ "%"] :: IO [Series]
 
-getSeriesById conn id = do
-  fetched <- query conn "SELECT * FROM \"Series\" WHERE id = ?" [id] :: IO [Series]
+getSeriesById conn id = queryOne conn q [id] :: IO (Maybe Series)
+  where
+    q = "SELECT * FROM \"Series\" WHERE id = ?"
 
-  if null fetched
-    then return Nothing
-    else return $ Just $ head fetched
+-- do
+-- fetched <- query conn "SELECT * FROM \"Series\" WHERE id = ?" [id] :: IO [Series]
+
+-- if null fetched
+--   then return Nothing
+--   else return $ Just $ head fetched
 
 addNewSeries conn (Series _ title year rating description seriesType imageUrl) =
   execute conn "INSERT INTO \"Series\" (title, year, rating, description, type, \"imageUrl\") VALUES (?, ?, ?, ?, ?, ?)" (title, year, rating, description, seriesType, imageUrl)

@@ -6,6 +6,7 @@ module Database.Episode where
 
 import Data.Aeson
 import Data.Time
+import Database.Db
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromField
 import Database.PostgreSQL.Simple.FromRow
@@ -41,12 +42,9 @@ instance FromRow EpisodeWithUserEpisode where
 getAllEpisodeBySeriesId conn seriesId =
   query conn "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ?" [seriesId] :: IO [Episode]
 
-getEpisodeByNo conn seriesId episodeNo = do
-  fetched <- query conn "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ? AND no = ?" (seriesId, episodeNo) :: IO [Episode]
-
-  if null fetched
-    then return Nothing
-    else return $ Just $ head fetched
+getEpisodeByNo conn seriesId episodeNo = queryOne conn q (seriesId, episodeNo) :: IO (Maybe Episode)
+  where
+    q = "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ? AND no = ?"
 
 getAllTrackedEpisodeBySeriesId conn user seriesId =
   query conn q (user, seriesId) :: IO [EpisodeWithUserEpisode]

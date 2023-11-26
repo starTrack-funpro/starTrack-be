@@ -6,6 +6,7 @@ module Database.UserEpisode where
 
 import Data.Aeson
 import Data.Time (TimeOfDay)
+import Database.Db
 import Database.PostgreSQL.Simple
 import GHC.Generics
 
@@ -17,12 +18,7 @@ data UserEpisode = UserEpisode
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
-getUserEpisode conn user seriesId episodeNo = do
-  fetched <- query conn q (user, seriesId, episodeNo) :: IO [UserEpisode]
-
-  if null fetched
-    then return Nothing
-    else return $ Just $ head fetched
+getUserEpisode conn user seriesId episodeNo = queryOne conn q (user, seriesId, episodeNo) :: IO (Maybe UserEpisode)
   where
     q = "SELECT \"user\", \"seriesId\", \"episodeNo\", \"lastWatchTime\" FROM \"UserEpisode\" WHERE \"user\" = ? AND \"seriesId\" = ? AND \"episodeNo\" = ?"
 

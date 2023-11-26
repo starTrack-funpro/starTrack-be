@@ -5,6 +5,7 @@
 module Database.UserSeries where
 
 import Data.Aeson
+import Database.Db
 import Database.PostgreSQL.Simple
 import qualified Database.Series as S
 import GHC.Generics
@@ -19,12 +20,9 @@ data UserSeries = UserSeries
 addNewUserSeries conn (UserSeries _ username seriesId) =
   execute conn "INSERT INTO \"UserSeries\" (username, \"seriesId\") VALUES (?, ?)" (username, seriesId)
 
-getUserSeries conn username seriesId = do
-  fetched <- query conn "SELECT * FROM \"UserSeries\" WHERE username = ? AND \"seriesId\" = ?" (username, seriesId) :: IO [UserSeries]
-
-  if null fetched
-    then return Nothing
-    else return $ Just $ head fetched
+getUserSeries conn username seriesId = queryOne conn q (username, seriesId) :: IO (Maybe UserSeries)
+  where
+    q = "SELECT * FROM \"UserSeries\" WHERE username = ? AND \"seriesId\" = ?"
 
 getAllUserSeries conn username =
   query
