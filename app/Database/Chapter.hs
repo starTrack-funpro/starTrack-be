@@ -5,6 +5,7 @@
 module Database.Chapter where
 
 import Data.Aeson
+import Database.Db
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromRow
 import Database.UserChapter
@@ -38,7 +39,11 @@ instance FromRow ChapterWithUserChapter where
           _ -> return Nothing
 
 getAllChapterBySeriesId conn seriesId =
-  query conn "SELECT * FROM \"Chapter\" WHERE \"seriesId\" = ?" [seriesId] :: IO [Chapter]
+  query conn "SELECT title, no, \"pageFrom\", \"pageTo\", \"seriesId\" FROM \"Chapter\" WHERE \"seriesId\" = ?" [seriesId] :: IO [Chapter]
+
+getChapterByNo conn seriesId chapterNo = queryOne conn q (seriesId, chapterNo) :: IO (Maybe Chapter)
+  where
+    q = "SELECT title, no, \"pageFrom\", \"pageTo\", \"seriesId\" FROM \"Chapter\" WHERE \"seriesId\" = ? AND no = ?"
 
 getAllTrackedChapterBySeriesId conn user seriesId =
   query conn q (user, seriesId) :: IO [ChapterWithUserChapter]

@@ -3,13 +3,14 @@ module SeriesTrack where
 import Control.Monad
 import Control.Monad.IO.Class
 import Data.Aeson
-import Data.Time (TimeOfDay (TimeOfDay))
+import Data.Time
 import Database.Chapter
 import Database.Episode
 import Database.PostgreSQL.Simple
 import Database.Series
 import qualified Database.Series as S
 import Database.User
+import Database.UserChapter
 import Database.UserEpisode
 import Database.UserSeries
 import Happstack.Server
@@ -20,6 +21,7 @@ seriesTrackRoutes conn =
   msum
     [ nullDir >> getTrackedSeriesHandler conn,
       path $ \seriesId -> dir "episode" $ path $ \episodeNo -> trackEpisodeHandler conn seriesId episodeNo,
+      path $ \seriesId -> dir "chapter" $ path $ \chapterNo -> trackChapterHandler conn seriesId chapterNo,
       path $ \seriesId -> getTrackedSeriesByIdHandler conn seriesId,
       path $ \seriesId -> trackSeriesHandler conn seriesId
     ]
@@ -120,4 +122,27 @@ trackEpisodeHandler conn seriesId episodeNo = authenticate $ do
         (_, Nothing, _, _) -> notFound $ msgResponse "Series not found"
         (_, _, Nothing, _) -> notFound $ msgResponse "Episode not found"
         (_, _, _, Just _) -> badRequest $ msgResponse "Episode already tracked"
+    Nothing -> unauthorizedResponse
+
+trackChapterHandler :: Connection -> Int -> Int -> ServerPartT IO Response
+trackChapterHandler conn seriesId chapterNo = authenticate $ do
+  method POST
+  maybeUsername <- getUsernameFromJwt
+
+  case maybeUsername of
+    Just username -> do
+      user <- liftIO $ getUserByUsername conn username
+      fetchedSeries <- liftIO $ getSeriesById conn seriesId
+      fetchedChapter <- liftIO $ getChapterByNo conn seriesId chapterNo
+      fetchedUserChapter <- liftIO $ getUserChapter conn username seriesId chapterNo
+
+      case (user, fetchedSeries, fetchedChapter, fetchedUserChapter) of
+        (Just user, Just _, Just chapter, Nothing) -> do
+          let userChapter = UserChapter username seriesId chapterNo (pageFrom chapter)
+          liftIO $ addNewUserChapter conn userChapter
+          ok $ msgResponse "Successfully track chapter"
+        (Nothing, _, _, _) -> unauthorizedResponse
+        (_, Nothing, _, _) -> notFound $ msgResponse "Series not found"
+        (_, _, Nothing, _) -> notFound $ msgResponse "Chapter not found"
+        (_, _, _, Just _) -> badRequest $ msgResponse "Chapter already tracked"
     Nothing -> unauthorizedResponse
