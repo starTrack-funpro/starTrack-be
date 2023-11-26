@@ -23,3 +23,8 @@ getUserChapter conn user seriesId chapterNo = queryOne conn q (user, seriesId, c
 
 addNewUserChapter conn (UserChapter user seriesId chapterNo lastReadPage) =
   execute conn "INSERT INTO \"UserChapter\" (\"user\", \"seriesId\", \"chapterNo\", \"lastReadPage\") VALUES (?, ?, ?, ?)" (user, seriesId, chapterNo, lastReadPage)
+
+updateLastReadPage conn user seriesId chapterNo lastReadPage =
+  execute conn q (lastReadPage, user, seriesId, chapterNo)
+  where
+    q = "UPDATE \"UserChapter\" SET \"lastReadPage\" = ? WHERE \"user\" = ? AND \"seriesId\" = ? AND \"chapterNo\" = ?"

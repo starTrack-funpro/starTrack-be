@@ -25,8 +25,4 @@ getUserSeries conn username seriesId = queryOne conn q (username, seriesId) :: I
     q = "SELECT * FROM \"UserSeries\" WHERE username = ? AND \"seriesId\" = ?"
 
 getAllUserSeries conn username =
-  query
-    conn
-    "SELECT * FROM \"Series\" WHERE id IN (SELECT \"seriesId\" FROM \"UserSeries\" WHERE username = ?)"
-    [username] ::
-    IO [S.Series]
+  query conn "SELECT * FROM \"Series\" WHERE id IN (SELECT \"seriesId\" FROM \"UserSeries\" WHERE username = ?)" [username] :: IO [S.Series]
