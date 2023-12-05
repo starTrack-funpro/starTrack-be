@@ -13,12 +13,13 @@ import Happstack.Server
 data User = User
   { username :: String,
     password :: String,
-    name :: String
+    name :: String,
+    role :: String
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
 getUserByUsername conn name = queryOne conn q [name] :: IO (Maybe User)
   where
-    q = "SELECT username, password, name FROM \"User\" WHERE username = ?"
+    q = "SELECT username, password, name, role FROM \"User\" WHERE username = ?"
 
-addNewUser conn (User username password name) = execute conn "INSERT INTO \"User\" VALUES (?, ?, ?)" (username, password, name)
+addNewUser conn (User username password name _) = execute conn "INSERT INTO \"User\" VALUES (?, ?, ?)" (username, password, name)

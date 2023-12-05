@@ -40,7 +40,7 @@ register conn = decodeRequestBody $ do
     Nothing -> do
       hashedPassword <- hashPassword $ mkPassword $ T.pack formPassword
 
-      liftIO $ addNewUser conn User {U.username = formUsername, U.password = T.unpack $ unPasswordHash hashedPassword, U.name = formName}
+      liftIO $ addNewUser conn User {U.username = formUsername, U.password = T.unpack $ unPasswordHash hashedPassword, U.name = formName, U.role = "USER"}
 
       ok $ msgResponse "Successfully registered"
     Just checkUser -> badRequest $ msgResponse "User already exists"
@@ -62,7 +62,7 @@ login conn = decodeRequestBody $ do
 
       case passwordCheck of
         PasswordCheckSuccess -> do
-          token <- liftIO $ generateToken (String $ T.pack $ U.username checkUser)
+          token <- liftIO $ generateToken (String $ T.pack $ U.username checkUser) (String $ T.pack $ show $ U.role checkUser)
           let jwtCookie = createCookie "startrack-jwt" $ T.unpack token
               cookieLife = MaxAge $ 7 * 24 * 3600
 
@@ -91,7 +91,7 @@ protected conn = authenticate $ do
       fetchedUser <- liftIO $ getUserByUsername conn username
       case fetchedUser of
         Just user ->
-          ok $ defaultResponse $ encode $ UserInfo (U.username user) (U.name user)
+          ok $ defaultResponse $ encode $ UserInfo (U.username user) (U.name user) (U.role user)
         Nothing -> unauthorizedResponse
     Nothing -> do
       expireCookie "startrack-jwt"
@@ -101,6 +101,7 @@ createCookie key val = Cookie "1" "/" "" key val False True SameSiteNoValue
 
 data UserInfo = UserInfo
   { username :: String,
-    name :: String
+    name :: String,
+    role :: String
   }
   deriving (Generic, Show, ToJSON)

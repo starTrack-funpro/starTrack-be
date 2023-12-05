@@ -18,10 +18,10 @@ readJwtSecret = do
   jwtSecretEnv <- getEnv "JWT_SECRET"
   return $ T.pack jwtSecretEnv
 
-generateToken username = do
+generateToken username role = do
   jwtSecret <- readJwtSecret
 
-  let claims = mempty {iss = stringOrURI "startrack-be", unregisteredClaims = ClaimsMap $ M.fromList [("username", username)]}
+  let claims = mempty {iss = stringOrURI "startrack-be", unregisteredClaims = ClaimsMap $ M.fromList [("username", username), ("role", role)]}
       key = hmacSecret jwtSecret
 
   return $ encodeSigned key mempty claims
