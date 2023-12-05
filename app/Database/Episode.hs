@@ -52,7 +52,8 @@ getAllTrackedEpisodeBySeriesId conn user seriesId =
     q =
       "SELECT e.title, e.no, e.duration, e.\"seriesId\", ue.user, ue.\"seriesId\", ue.\"episodeNo\", ue.\"lastWatchTime\" \
       \FROM \"Episode\" e LEFT JOIN \"UserEpisode\" ue \
-      \ON e.no = ue.\"episodeNo\" AND e.\"seriesId\" = ue.\"seriesId\" AND ue.user = ? AND e.\"seriesId\" = ?"
+      \ON e.no = ue.\"episodeNo\" AND e.\"seriesId\" = ue.\"seriesId\" \
+      \WHERE ue.user = ? AND e.\"seriesId\" = ?"
 
-addNewEpisode conn (Episode no title duration seriesId) =
+addNewEpisode conn (Episode title no duration seriesId) =
   execute conn "INSERT INTO \"Episode\" (title, no, duration, \"seriesId\") VALUES (?, ?, ?, ?)" (title, no, duration, seriesId)
