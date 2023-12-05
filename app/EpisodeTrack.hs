@@ -19,9 +19,12 @@ episodeTrackRoutes conn seriesId =
     ]
 
 trackEpisodeHandler :: Connection -> Int -> Int -> ServerPartT IO Response
-trackEpisodeHandler conn seriesId episodeNo = authenticate $ do
+trackEpisodeHandler conn seriesId episodeNo = authenticate $ decodeRequestBody $ do
   method POST
   maybeUsername <- getUsernameFromJwt
+
+  formLastWatchTimeStr <- look "lastWatchTime"
+  let formLastWatchTime = parseDuration formLastWatchTimeStr
 
   case maybeUsername of
     Just username -> do
@@ -32,7 +35,7 @@ trackEpisodeHandler conn seriesId episodeNo = authenticate $ do
 
       case (user, fetchedSeries, fetchedEpisode, fetchedUserEpisode) of
         (Just user, Just _, Just _, Nothing) -> do
-          let userEpisode = UserEpisode username seriesId episodeNo (TimeOfDay 0 0 0)
+          let userEpisode = UserEpisode username seriesId episodeNo formLastWatchTime
           liftIO $ addNewUserEpisode conn userEpisode
           ok $ msgResponse "Successfully track episode"
         (Nothing, _, _, _) -> unauthorizedResponse

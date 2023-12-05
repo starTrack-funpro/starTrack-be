@@ -18,9 +18,10 @@ chapterTrackRoutes conn seriesId =
     ]
 
 trackChapterHandler :: Connection -> Int -> Int -> ServerPartT IO Response
-trackChapterHandler conn seriesId chapterNo = authenticate $ do
+trackChapterHandler conn seriesId chapterNo = authenticate $ decodeRequestBody $ do
   method POST
   maybeUsername <- getUsernameFromJwt
+  formLastReadPage <- look "lastReadPage"
 
   case maybeUsername of
     Just username -> do
@@ -31,7 +32,7 @@ trackChapterHandler conn seriesId chapterNo = authenticate $ do
 
       case (user, fetchedSeries, fetchedChapter, fetchedUserChapter) of
         (Just _, Just _, Just chapter, Nothing) -> do
-          let userChapter = UserChapter username seriesId chapterNo (pageFrom chapter)
+          let userChapter = UserChapter username seriesId chapterNo (read formLastReadPage)
           liftIO $ addNewUserChapter conn userChapter
           ok $ msgResponse "Successfully track chapter"
         (Nothing, _, _, _) -> unauthorizedResponse
@@ -57,9 +58,9 @@ updateTrackHandler conn seriesId chapterNo = authenticate $ decodeRequestBody $ 
       case (user, fetchedSeries, fetchedChapter, fetchedUserChapter) of
         (Just _, Just _, Just _, Just _) -> do
           liftIO $ updateLastReadPage conn username seriesId chapterNo formLastReadPage
-          ok $ msgResponse "Successfully update episode track"
+          ok $ msgResponse "Successfully update chapter track"
         (Nothing, _, _, _) -> unauthorizedResponse
         (_, Nothing, _, _) -> notFound $ msgResponse "Series not found"
-        (_, _, Nothing, _) -> notFound $ msgResponse "Episode not found"
-        (_, _, _, Nothing) -> badRequest $ msgResponse "Episode not tracked"
+        (_, _, Nothing, _) -> notFound $ msgResponse "Chapter not found"
+        (_, _, _, Nothing) -> badRequest $ msgResponse "Chapter not tracked"
     Nothing -> unauthorizedResponse
