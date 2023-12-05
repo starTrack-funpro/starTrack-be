@@ -52,8 +52,8 @@ getAllTrackedChapterBySeriesId conn user seriesId =
       "SELECT c.title, c.no, c.\"pageFrom\", c.\"pageTo\", c.\"seriesId\", \
       \uc.user, uc.\"seriesId\", uc.\"chapterNo\", uc.\"lastReadPage\" \
       \FROM \"Chapter\" c LEFT JOIN \"UserChapter\" uc \
-      \ON c.no = uc.\"chapterNo\" AND c.\"seriesId\" = uc.\"seriesId\" \
-      \WHERE uc.user = ? AND c.\"seriesId\" = ?"
+      \ON c.no = uc.\"chapterNo\" AND c.\"seriesId\" = uc.\"seriesId\" AND uc.user = ? \
+      \WHERE c.\"seriesId\" = ?"
 
 addNewChapter conn (Chapter title no pageFrom pageTo seriesId) =
   execute conn "INSERT INTO \"Chapter\" (title, no, \"pageFrom\", \"pageTo\", \"seriesId\") VALUES (?, ?, ?, ?, ?)" (title, no, pageFrom, pageTo, seriesId)

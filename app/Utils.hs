@@ -23,6 +23,7 @@ defaultHeaders =
     . setHeader "Access-Control-Allow-Origin" "http://localhost:3000"
     . setHeader "Access-Control-Allow-Credentials" "true"
     . setHeader "Access-Control-Allow-Methods" "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    . setHeader "Access-Control-Allow-Headers" "Content-Type, Accept"
 
 defaultResponse content = defaultHeaders $ toResponse content
 
