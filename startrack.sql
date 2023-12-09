@@ -340,3 +340,4 @@ ALTER TABLE ONLY public."UserSeries"
 -- PostgreSQL database dump complete
 --
 
+INSERT INTO public."User" VALUES ('admin', '$2b$10$hBGVNC1gtdsXIvxLNTYtEe9qvCM/Fr6O02/gUCrsdAilamy82f3T.', 'admin', 'ADMIN');

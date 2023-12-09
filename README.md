@@ -31,3 +31,6 @@ JWT_SECRET=mysecret
 
 ### Running the Server
 Run `cabal run` at the root of the project to start the server. The server will run at port `8000`. You can send a GET request to `localhost:8000/hello` to check the server.
+
+### Admin User
+The `startrack.sql` contains an SQL query to add an admin account with username `admin` and password `admin`. This account can be used to login as admin on the web.
