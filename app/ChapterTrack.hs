@@ -45,7 +45,6 @@ updateTrackHandler :: Connection -> Int -> Int -> ServerPartT IO Response
 updateTrackHandler conn seriesId chapterNo = authenticate $ decodeRequestBody $ do
   method PATCH
   maybeUsername <- getUsernameFromJwt
-
   formLastReadPage <- look "lastReadPage"
 
   case maybeUsername of

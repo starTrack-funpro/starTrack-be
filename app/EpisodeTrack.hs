@@ -23,8 +23,9 @@ trackEpisodeHandler conn seriesId episodeNo = authenticate $ decodeRequestBody $
   method POST
   maybeUsername <- getUsernameFromJwt
 
-  formLastWatchTimeStr <- look "lastWatchTime"
-  let formLastWatchTime = parseDuration formLastWatchTimeStr
+  -- formLastWatchTimeStr <- look "lastWatchTime"
+  -- let formLastWatchTime = parseDuration formLastWatchTimeStr
+  formLastWatchTime <- extractFormLastWatchTime
 
   case maybeUsername of
     Just username -> do
@@ -49,8 +50,9 @@ updateTrackHandler conn seriesId episodeNo = authenticate $ decodeRequestBody $ 
   method PATCH
   maybeUsername <- getUsernameFromJwt
 
-  formLastWatchTimeStr <- look "lastWatchTime"
-  let formLastWatchTime = parseDuration formLastWatchTimeStr
+  -- formLastWatchTimeStr <- look "lastWatchTime"
+  -- let formLastWatchTime = parseDuration formLastWatchTimeStr
+  formLastWatchTime <- extractFormLastWatchTime
 
   case maybeUsername of
     Just username -> do
@@ -68,3 +70,9 @@ updateTrackHandler conn seriesId episodeNo = authenticate $ decodeRequestBody $ 
         (_, _, Nothing, _) -> notFound $ msgResponse "Episode not found"
         (_, _, _, Nothing) -> badRequest $ msgResponse "Episode not tracked"
     Nothing -> unauthorizedResponse
+
+extractFormLastWatchTime = do
+  formLastWatchTimeStr <- look "lastWatchTime"
+  let formLastWatchTime = parseDuration formLastWatchTimeStr
+
+  return formLastWatchTime
