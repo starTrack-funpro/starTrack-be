@@ -17,12 +17,14 @@ data UserSeries = UserSeries
   }
   deriving (Generic, Show, ToRow, FromRow, ToJSON)
 
-addNewUserSeries conn (UserSeries _ username seriesId) =
-  execute conn "INSERT INTO \"UserSeries\" (username, \"seriesId\") VALUES (?, ?)" (username, seriesId)
+addNewUserSeries conn (UserSeries _ username seriesId) = execute conn q (username, seriesId)
+  where
+    q = "INSERT INTO \"UserSeries\" (username, \"seriesId\") VALUES (?, ?)"
 
 getUserSeries conn username seriesId = queryOne conn q (username, seriesId) :: IO (Maybe UserSeries)
   where
     q = "SELECT * FROM \"UserSeries\" WHERE username = ? AND \"seriesId\" = ?"
 
-getAllUserSeries conn username =
-  query conn "SELECT * FROM \"Series\" WHERE id IN (SELECT \"seriesId\" FROM \"UserSeries\" WHERE username = ?)" [username] :: IO [S.Series]
+getAllUserSeries conn username = query conn q [username] :: IO [S.Series]
+  where
+    q = "SELECT * FROM \"Series\" WHERE id IN (SELECT \"seriesId\" FROM \"UserSeries\" WHERE username = ?)"

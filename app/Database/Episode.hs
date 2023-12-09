@@ -39,8 +39,9 @@ instance FromRow EpisodeWithUserEpisode where
           (Just user, Just seriesId, Just episodeNo, Just lastWatchTime) -> return $ Just (UserEpisode user seriesId episodeNo lastWatchTime)
           _ -> return Nothing
 
-getAllEpisodeBySeriesId conn seriesId =
-  query conn "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ?" [seriesId] :: IO [Episode]
+getAllEpisodeBySeriesId conn seriesId = query conn q [seriesId] :: IO [Episode]
+  where
+    q = "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ?"
 
 getEpisodeByNo conn seriesId episodeNo = queryOne conn q (seriesId, episodeNo) :: IO (Maybe Episode)
   where
@@ -55,5 +56,6 @@ getAllTrackedEpisodeBySeriesId conn user seriesId =
       \ON e.no = ue.\"episodeNo\" AND e.\"seriesId\" = ue.\"seriesId\" AND ue.user = ? \
       \WHERE e.\"seriesId\" = ?"
 
-addNewEpisode conn (Episode title no duration seriesId) =
-  execute conn "INSERT INTO \"Episode\" (title, no, duration, \"seriesId\") VALUES (?, ?, ?, ?)" (title, no, duration, seriesId)
+addNewEpisode conn (Episode title no duration seriesId) = execute conn q (title, no, duration, seriesId)
+  where
+    q = "INSERT INTO \"Episode\" (title, no, duration, \"seriesId\") VALUES (?, ?, ?, ?)"

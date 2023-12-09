@@ -59,8 +59,12 @@ data SeriesTracking = SeriesTracking
   }
   deriving (Generic, ToJSON)
 
-getAllSeries conn title (Just seriesType) = query conn "SELECT * FROM \"Series\" WHERE UPPER(title) LIKE UPPER(?) AND type=?" ("%" ++ title ++ "%", seriesType) :: IO [Series]
-getAllSeries conn title Nothing = query conn "SELECT * FROM \"Series\" WHERE UPPER(title) LIKE UPPER(?)" ["%" ++ title ++ "%"] :: IO [Series]
+getAllSeries conn title (Just seriesType) = query conn q ("%" ++ title ++ "%", seriesType) :: IO [Series]
+  where
+    q = "SELECT * FROM \"Series\" WHERE UPPER(title) LIKE UPPER(?) AND type=?"
+getAllSeries conn title Nothing = query conn q ["%" ++ title ++ "%"] :: IO [Series]
+  where
+    q = "SELECT * FROM \"Series\" WHERE UPPER(title) LIKE UPPER(?)"
 
 getSeriesById conn id = queryOne conn q [id] :: IO (Maybe Series)
   where
@@ -73,8 +77,10 @@ getSeriesById conn id = queryOne conn q [id] :: IO (Maybe Series)
 --   then return Nothing
 --   else return $ Just $ head fetched
 
-addNewSeries conn (Series _ title year rating description seriesType imageUrl) =
-  execute conn "INSERT INTO \"Series\" (title, year, rating, description, type, \"imageUrl\") VALUES (?, ?, ?, ?, ?, ?)" (title, year, rating, description, seriesType, imageUrl)
+addNewSeries conn (Series _ title year rating description seriesType imageUrl) = execute conn q (title, year, rating, description, seriesType, imageUrl)
+  where
+    q = "INSERT INTO \"Series\" (title, year, rating, description, type, \"imageUrl\") VALUES (?, ?, ?, ?, ?, ?)"
 
-updateSeries conn (Series id title year rating description seriesType imageUrl) =
-  execute conn "UPDATE \"Series\" SET title=?, year=?, rating=?, description=?, type=?, \"imageUrl\"=? WHERE id=?" (title, year, rating, description, seriesType, imageUrl, id)
+updateSeries conn (Series id title year rating description seriesType imageUrl) = execute conn q (title, year, rating, description, seriesType, imageUrl, id)
+  where
+    q = "UPDATE \"Series\" SET title=?, year=?, rating=?, description=?, type=?, \"imageUrl\"=? WHERE id=?"
