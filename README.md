@@ -13,8 +13,8 @@ starTrack is a web based series (TV Series, Film, Comic, Novel) progress tracker
 ### Prerequisites and Setup
 1. Install `haskell` and `cabal`.
 2. Install `PostgreSQL`.
-3. Create a `PostgreSQL` database.
-4. Clone this repository.
+3. Clone this repository.
+4. Create a `PostgreSQL` database based on the file `startrack.sql`. Alternatively, run `psql -f startrack.sql` (assuming the `PostgreSQL` user is `postgres`).
 5. Create a `.env` file at the root of the project.
 6. Fill the `.env` file with:
 ```env
