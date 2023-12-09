@@ -50,14 +50,15 @@ addSeriesHandler :: Connection -> ServerPart Response
 addSeriesHandler conn = authenticate $ decodeRequestBody $ do
   method POST
 
-  formTitle <- look "title"
-  formYear <- look "year"
-  formRating <- look "rating"
-  formDesc <- look "description"
-  formType <- look "type"
-  formImageUrl <- look "imageUrl"
+  -- formTitle <- look "title"
+  -- formYear <- look "year"
+  -- formRating <- look "rating"
+  -- formDesc <- look "description"
+  -- formType <- look "type"
+  -- formImageUrl <- look "imageUrl"
 
-  let newSeries = Series 0 formTitle (read formYear) (read formRating) formDesc (read formType) formImageUrl
+  -- let newSeries = Series 0 formTitle (read formYear) (read formRating) formDesc (read formType) formImageUrl
+  newSeries <- extractFormSeries 0
 
   liftIO $ addNewSeries conn newSeries
 
@@ -67,6 +68,21 @@ updateSeriesHandler :: Connection -> Int -> ServerPart Response
 updateSeriesHandler conn seriesId = authenticate $ decodeRequestBody $ do
   method PATCH
 
+  -- formTitle <- look "title"
+  -- formYear <- look "year"
+  -- formRating <- look "rating"
+  -- formDesc <- look "description"
+  -- formType <- look "type"
+  -- formImageUrl <- look "imageUrl"
+
+  -- let updatedSeries = Series seriesId formTitle (read formYear) (read formRating) formDesc (read formType) formImageUrl
+  updatedSeries <- extractFormSeries seriesId
+
+  liftIO $ updateSeries conn updatedSeries
+
+  ok $ msgResponse "Successfully update series"
+
+extractFormSeries seriesId = do
   formTitle <- look "title"
   formYear <- look "year"
   formRating <- look "rating"
@@ -74,8 +90,6 @@ updateSeriesHandler conn seriesId = authenticate $ decodeRequestBody $ do
   formType <- look "type"
   formImageUrl <- look "imageUrl"
 
-  let updatedSeries = Series seriesId formTitle (read formYear) (read formRating) formDesc (read formType) formImageUrl
+  let formSeries = Series seriesId formTitle (read formYear) (read formRating) formDesc (read formType) formImageUrl
 
-  liftIO $ updateSeries conn updatedSeries
-
-  ok $ msgResponse "Successfully update series"
+  return formSeries
