@@ -22,9 +22,6 @@ trackEpisodeHandler :: Connection -> Int -> Int -> ServerPartT IO Response
 trackEpisodeHandler conn seriesId episodeNo = authenticate $ decodeRequestBody $ do
   method POST
   maybeUsername <- getUsernameFromJwt
-
-  -- formLastWatchTimeStr <- look "lastWatchTime"
-  -- let formLastWatchTime = parseDuration formLastWatchTimeStr
   formLastWatchTime <- extractFormLastWatchTime
 
   case maybeUsername of
@@ -49,9 +46,6 @@ updateTrackHandler :: Connection -> Int -> Int -> ServerPartT IO Response
 updateTrackHandler conn seriesId episodeNo = authenticate $ decodeRequestBody $ do
   method PATCH
   maybeUsername <- getUsernameFromJwt
-
-  -- formLastWatchTimeStr <- look "lastWatchTime"
-  -- let formLastWatchTime = parseDuration formLastWatchTimeStr
   formLastWatchTime <- extractFormLastWatchTime
 
   case maybeUsername of

@@ -70,13 +70,6 @@ getSeriesById conn id = queryOne conn q [id] :: IO (Maybe Series)
   where
     q = "SELECT * FROM \"Series\" WHERE id = ?"
 
--- do
--- fetched <- query conn "SELECT * FROM \"Series\" WHERE id = ?" [id] :: IO [Series]
-
--- if null fetched
---   then return Nothing
---   else return $ Just $ head fetched
-
 addNewSeries conn (Series _ title year rating description seriesType imageUrl) = execute conn q (title, year, rating, description, seriesType, imageUrl)
   where
     q = "INSERT INTO \"Series\" (title, year, rating, description, type, \"imageUrl\") VALUES (?, ?, ?, ?, ?, ?)"

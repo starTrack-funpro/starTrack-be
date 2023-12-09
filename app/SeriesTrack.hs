@@ -58,14 +58,6 @@ getTrackedSeriesByIdHandler conn seriesId = authenticate $ do
       case (user, fetchedSeries, fetchedUserSeries) of
         (Just _, Just series, Just _) -> do
           let sType = seriesType series
-          -- for comparison
-          -- if sType == TVSeries || sType == Film
-          --   then do
-          --     tracked <- liftIO $ getAllTrackedEpisodeBySeriesId conn username $ S.id series
-          --     ok $ defaultResponse $ encode tracked
-          --   else do
-          --     tracked <- liftIO $ getAllTrackedChapterBySeriesId conn username $ S.id series
-          --     ok $ defaultResponse $ encode tracked
 
           if sType == TVSeries || sType == Film
             then seriesTrackInfo EpisodeTracking getAllTrackedEpisodeBySeriesId
