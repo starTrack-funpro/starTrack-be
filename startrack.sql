@@ -362,6 +362,69 @@ INSERT INTO public."Series" OVERRIDING SYSTEM VALUE VALUES (19, 'Cantik itu Luka
 INSERT INTO public."Series" OVERRIDING SYSTEM VALUE VALUES (20, 'Little Women', 1868, 5, 'Four sisters and their mother, whom they call Marmee, live in a new neighborhood (loosely based on Concord) in Massachusetts in genteel poverty. Having lost all his money, their father is serving as a chaplain for the Union Army in the American Civil War, far from home. The mother and daughters face their first Christmas without him. When Marmee asks her daughters to give their Christmas breakfast away to an impoverished family, the girls and their mother venture into town laden with baskets to feed the hungry children. When they return, they discover their wealthy, elderly neighbor Mr. Laurence has sent over a decadent surprise dinner to make up for their breakfast. The two families become acquainted following these acts of kindness.', 'Novel', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Houghton_AC85.A%E2%84%93194L.1869_pt.2aa_-_Little_Women%2C_title.jpg/300px-Houghton_AC85.A%E2%84%93194L.1869_pt.2aa_-_Little_Women%2C_title.jpg');
 
 --
+-- TOC entry 3358 (class 0 OID 219173)
+-- Dependencies: 209
+-- Data for Name: Chapter; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."Chapter" VALUES (2, 27, 53, 'The Priest''s Lie', 1);
+INSERT INTO public."Chapter" VALUES (1, 1, 26, 'The Journey''s End', 1);
+INSERT INTO public."Chapter" VALUES (3, 54, 77, 'Blue-Moon Weed', 1);
+INSERT INTO public."Chapter" VALUES (4, 78, 100, 'The Mage''s Secret', 1);
+INSERT INTO public."Chapter" VALUES (1, 1, 20, 'Grace Field House', 2);
+INSERT INTO public."Chapter" VALUES (2, 21, 40, 'The Way Out', 2);
+INSERT INTO public."Chapter" VALUES (3, 41, 62, 'The Iron Woman', 2);
+INSERT INTO public."Chapter" VALUES (4, 63, 88, 'The Best Option', 2);
+INSERT INTO public."Chapter" VALUES (1, 1, 29, 'To You, 2,000 Years from Now', 3);
+INSERT INTO public."Chapter" VALUES (2, 30, 55, 'That Day', 3);
+INSERT INTO public."Chapter" VALUES (3, 56, 77, 'Night of the Disbanding Ceremony', 3);
+INSERT INTO public."Chapter" VALUES (4, 78, 100, 'First Battle', 3);
+INSERT INTO public."Chapter" VALUES (1, 1, 33, 'Usagi - Sailor Moon', 4);
+INSERT INTO public."Chapter" VALUES (2, 34, 51, 'Ami - Sailor Mercury', 4);
+INSERT INTO public."Chapter" VALUES (3, 52, 80, 'Rei - Sailor Mars', 4);
+INSERT INTO public."Chapter" VALUES (1, 1, 24, 'Volume 1', 5);
+INSERT INTO public."Chapter" VALUES (2, 25, 60, 'Volume 2', 5);
+INSERT INTO public."Chapter" VALUES (3, 61, 87, 'Volume 3', 5);
+INSERT INTO public."Chapter" VALUES (1, 1, 376, 'It Ends with Us', 16);
+INSERT INTO public."Chapter" VALUES (1, 1, 471, 'Graceling', 17);
+INSERT INTO public."Chapter" VALUES (1, 1, 545, 'The Poppy War', 18);
+INSERT INTO public."Chapter" VALUES (1, 1, 537, 'Cantik itu Luka', 19);
+INSERT INTO public."Chapter" VALUES (1, 1, 759, 'Little Women', 20);
+
+
+--
+-- TOC entry 3359 (class 0 OID 219180)
+-- Dependencies: 210
+-- Data for Name: Episode; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."Episode" VALUES (1, 'Howl''s Moving Castle', '01:59:00', 6);
+INSERT INTO public."Episode" VALUES (1, 'Flipped', '01:30:00', 7);
+INSERT INTO public."Episode" VALUES (1, 'Harry Potter and the Philosopher''s Stone', '02:32:00', 8);
+INSERT INTO public."Episode" VALUES (1, 'The Secret of Moonacre', '01:43:00', 9);
+INSERT INTO public."Episode" VALUES (1, 'Me Before You', '01:50:00', 10);
+INSERT INTO public."Episode" VALUES (1, 'God U.', '00:52:00', 11);
+INSERT INTO public."Episode" VALUES (2, 'First Day', '00:53:00', 11);
+INSERT INTO public."Episode" VALUES (3, '#ThinkBrink', '00:51:00', 11);
+INSERT INTO public."Episode" VALUES (4, 'The Whole Truth', '00:55:00', 11);
+INSERT INTO public."Episode" VALUES (5, 'Welcome to the Monster Club', '00:57:00', 11);
+INSERT INTO public."Episode" VALUES (1, 'The End''s Beginning', '00:51:00', 12);
+INSERT INTO public."Episode" VALUES (2, 'Four Marks', '00:55:00', 12);
+INSERT INTO public."Episode" VALUES (3, 'Betrayer Moon', '00:54:00', 12);
+INSERT INTO public."Episode" VALUES (4, 'Of Banquets, Bastards and Burials', '00:56:00', 12);
+INSERT INTO public."Episode" VALUES (5, 'Bottled Appetites', '00:55:00', 12);
+INSERT INTO public."Episode" VALUES (1, 'Episode 1', '00:57:00', 13);
+INSERT INTO public."Episode" VALUES (2, 'Episode 2', '00:57:00', 13);
+INSERT INTO public."Episode" VALUES (3, 'Episode 3', '00:56:00', 13);
+INSERT INTO public."Episode" VALUES (1, 'A Shadow of the Past', '01:07:00', 14);
+INSERT INTO public."Episode" VALUES (2, 'Adrift', '00:59:00', 14);
+INSERT INTO public."Episode" VALUES (3, 'Adar', '00:57:00', 14);
+INSERT INTO public."Episode" VALUES (1, 'This Will Be Us', '00:55:00', 15);
+INSERT INTO public."Episode" VALUES (2, 'Let Go of Me', '00:56:00', 15);
+INSERT INTO public."Episode" VALUES (3, 'Doubt Thou the Stars', '00:56:00', 15);
+INSERT INTO public."Episode" VALUES (4, 'Sweet Dreams', '00:55:00', 15);
+
+--
 -- TOC entry 3362 (class 0 OID 218981)
 -- Dependencies: 213
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: -
