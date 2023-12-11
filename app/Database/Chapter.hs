@@ -38,22 +38,24 @@ instance FromRow ChapterWithUserChapter where
           (Just user, Just seriesId, Just chapterNo, Just lastReadPage) -> return $ Just (UserChapter user seriesId chapterNo lastReadPage)
           _ -> return Nothing
 
-getAllChapterBySeriesId conn seriesId =
-  query conn "SELECT title, no, \"pageFrom\", \"pageTo\", \"seriesId\" FROM \"Chapter\" WHERE \"seriesId\" = ?" [seriesId] :: IO [Chapter]
+getAllChapterBySeriesId conn seriesId = query conn q [seriesId] :: IO [Chapter]
+  where
+    q = "SELECT title, no, \"pageFrom\", \"pageTo\", \"seriesId\" FROM \"Chapter\" WHERE \"seriesId\" = ? ORDER BY no ASC"
 
 getChapterByNo conn seriesId chapterNo = queryOne conn q (seriesId, chapterNo) :: IO (Maybe Chapter)
   where
     q = "SELECT title, no, \"pageFrom\", \"pageTo\", \"seriesId\" FROM \"Chapter\" WHERE \"seriesId\" = ? AND no = ?"
 
-getAllTrackedChapterBySeriesId conn user seriesId =
-  query conn q (user, seriesId) :: IO [ChapterWithUserChapter]
+getAllTrackedChapterBySeriesId conn user seriesId = query conn q (user, seriesId) :: IO [ChapterWithUserChapter]
   where
     q =
       "SELECT c.title, c.no, c.\"pageFrom\", c.\"pageTo\", c.\"seriesId\", \
       \uc.user, uc.\"seriesId\", uc.\"chapterNo\", uc.\"lastReadPage\" \
       \FROM \"Chapter\" c LEFT JOIN \"UserChapter\" uc \
       \ON c.no = uc.\"chapterNo\" AND c.\"seriesId\" = uc.\"seriesId\" AND uc.user = ? \
-      \WHERE c.\"seriesId\" = ?"
+      \WHERE c.\"seriesId\" = ? \
+      \ORDER BY c.no ASC"
 
-addNewChapter conn (Chapter title no pageFrom pageTo seriesId) =
-  execute conn "INSERT INTO \"Chapter\" (title, no, \"pageFrom\", \"pageTo\", \"seriesId\") VALUES (?, ?, ?, ?, ?)" (title, no, pageFrom, pageTo, seriesId)
+addNewChapter conn (Chapter title no pageFrom pageTo seriesId) = execute conn q (title, no, pageFrom, pageTo, seriesId)
+  where
+    q = "INSERT INTO \"Chapter\" (title, no, \"pageFrom\", \"pageTo\", \"seriesId\") VALUES (?, ?, ?, ?, ?)"

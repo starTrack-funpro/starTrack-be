@@ -41,20 +41,20 @@ instance FromRow EpisodeWithUserEpisode where
 
 getAllEpisodeBySeriesId conn seriesId = query conn q [seriesId] :: IO [Episode]
   where
-    q = "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ?"
+    q = "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ? ORDER BY no ASC"
 
 getEpisodeByNo conn seriesId episodeNo = queryOne conn q (seriesId, episodeNo) :: IO (Maybe Episode)
   where
     q = "SELECT title, no, duration, \"seriesId\" FROM \"Episode\" WHERE \"seriesId\" = ? AND no = ?"
 
-getAllTrackedEpisodeBySeriesId conn user seriesId =
-  query conn q (user, seriesId) :: IO [EpisodeWithUserEpisode]
+getAllTrackedEpisodeBySeriesId conn user seriesId = query conn q (user, seriesId) :: IO [EpisodeWithUserEpisode]
   where
     q =
       "SELECT e.title, e.no, e.duration, e.\"seriesId\", ue.user, ue.\"seriesId\", ue.\"episodeNo\", ue.\"lastWatchTime\" \
       \FROM \"Episode\" e LEFT JOIN \"UserEpisode\" ue \
       \ON e.no = ue.\"episodeNo\" AND e.\"seriesId\" = ue.\"seriesId\" AND ue.user = ? \
-      \WHERE e.\"seriesId\" = ?"
+      \WHERE e.\"seriesId\" = ? \
+      \ORDER BY e.no ASC"
 
 addNewEpisode conn (Episode title no duration seriesId) = execute conn q (title, no, duration, seriesId)
   where
