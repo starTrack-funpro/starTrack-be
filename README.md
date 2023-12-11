@@ -33,5 +33,5 @@ JWT_SECRET=mysecret
 Run `cabal run` at the root of the project to start the server. The server will run at port `8000`. You can send a GET request to `localhost:8000/hello` to check the server.
 
 ### Database Seeder
-- The `startrack.sql` includes SQL queries to add 20 series to the database.
+- The `startrack.sql` contains SQL queries to create the database and add 20 series to the database.
 - The `startrack.sql` includes an SQL query to add an admin account with username `admin` and password `admin`. This account can be used to login as admin on the web.
